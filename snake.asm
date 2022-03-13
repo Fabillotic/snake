@@ -8,18 +8,20 @@ int 0x10
 mov ah, 0x0f ;Set bh to the active page number
 int 0x10
 
-mov byte [page], bh
+mov byte [direction], 0x01
 
 mov byte [snake], 0x00
 mov byte [snake + 1], 0x01
 mov byte [snake + 2], 0x11
 mov byte [snake + 3], 0x21
 mov byte [snake + 4], 0x31
-mov byte [snakelen], 0x05
+mov byte [snakelen], 5
 
+gameloop:
 ;Clear play area (fill it with white block characters)
 mov al, 0xdb ;Block character
 mov bl, 0x0f ;Color
+mov bl, [direction]
 mov cx, 16
 
 mov dx, 0x0F00
@@ -58,13 +60,26 @@ ror ebx, 16
 sub bl, 1
 jns snek
 
+ror ebx, 16
+
+int 0x1a
+mov bx, dx
+_wait:
+int 0x1a
+sub dx, bx
+add dx, 0xFFFF
+jnz _wait
+
+add byte [direction], 1
+
+jmp gameloop
+
 _a: jmp _a
 
 times 510-($-$$) db 0 ;Fill the rest of the file with zeros
 db 0x55, 0xaa ;Boot flag magic
 
 ;Variables
-[absolute 0x00]
-page resb 1
-snake resb 16
-snakelen resb 1
+snake equ 0x8000
+snakelen equ 0x8011
+direction equ 0x8020
