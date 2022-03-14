@@ -5,10 +5,8 @@ mov ah, 0x01 ;Remove cursor
 mov cx, 0x0706 ;Cursor that starts after it ends lol
 int 0x10
 
-mov ah, 0x0f ;Set bh to the active page number
-int 0x10
-
 mov byte [direction], 0x01
+mov byte [color], 0x00
 
 mov byte [snake], 0x00
 mov byte [snake + 1], 0x01
@@ -19,10 +17,16 @@ mov byte [snake + 5], 0x32
 mov byte [snakelen], 6
 
 gameloop:
+mov ah, 0x0f ;Set bh to the active page number
+int 0x10
+
 ;Clear play area (fill it with white block characters)
 mov al, 0xdb ;Block character
 mov bl, 0x0f ;Color
+mov byte bl, [color]
 mov cx, 16
+
+inc byte [color]
 
 mov dx, 0x0F00
 
@@ -35,12 +39,12 @@ int 0x10
 sub dh, 1
 jns clear
 
+;Draw snake
 ror ebx, 16
 mov bx, [snakelen]
 sub bl, 1
 
 snek:
-;Draw snake
 mov ah, 0x02
 mov dh, 0xF0
 mov dl, [snake+bx]
@@ -51,6 +55,7 @@ and dl, 0x0F
 ror ebx, 16
 int 0x10
 
+mov al, 0xdb ;Block character
 mov bl, 0x0a
 mov cx, 1
 mov ah, 0x09
@@ -60,7 +65,6 @@ ror ebx, 16
 sub bl, 1
 jns snek
 
-ror ebx, 16
 
 int 0x1a
 mov bx, dx
@@ -91,6 +95,7 @@ mov byte [snake+bx], dl
 inc byte [snakelen]
 
 ;Reduce snake size again
+dec byte [snakelen]
 
 jmp gameloop
 
@@ -103,3 +108,4 @@ db 0x55, 0xaa ;Boot flag magic
 snake equ 0x8000
 snakelen equ 0x8031
 direction equ 0x8040
+color equ 0x8042
