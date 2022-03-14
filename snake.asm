@@ -23,7 +23,7 @@ int 0x10
 ;Clear play area (fill it with white block characters)
 mov al, 0xdb ;Block character
 mov bl, 0x0f ;Color
-mov byte bl, [color]
+;mov byte bl, [color]
 mov cx, 16
 
 inc byte [color]
@@ -65,7 +65,9 @@ ror ebx, 16
 sub bl, 1
 jns snek
 
-
+mov byte [waitabit], 10
+moarwait:
+mov ah, 0x00
 int 0x1a
 mov bx, dx
 _wait:
@@ -73,6 +75,8 @@ int 0x1a
 sub dx, bx
 add dx, 0xFFFF
 jnz _wait
+sub byte [waitabit], 1
+jnz moarwait
 
 ;Move the snake
 xor bx, bx
@@ -95,7 +99,20 @@ mov byte [snake+bx], dl
 inc byte [snakelen]
 
 ;Reduce snake size again
+mov bx, 0x01
+mov cx, 0x00
+_ksnek:
+mov byte dl, [snake+bx]
+and dl, 0xFF
+mov byte [snake+bx-1], dl
+inc cl
+inc bx
+cmp [snakelen], cl
+jnz _ksnek
+
 dec byte [snakelen]
+
+;Keyboard input
 
 jmp gameloop
 
@@ -109,3 +126,4 @@ snake equ 0x8000
 snakelen equ 0x8031
 direction equ 0x8040
 color equ 0x8042
+waitabit equ 0x8044
