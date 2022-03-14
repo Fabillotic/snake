@@ -16,28 +16,27 @@ mov byte [snake + 4], 0x31
 mov byte [snake + 5], 0x32
 mov byte [snakelen], 6
 
+;Spam white block characters
+mov al, 0xdb
+mov bl, 0x0f
+mov cx, 0xffff
+
+mov dx, 0x1000
+mov ah, 0x02
+int 0x10
+mov ah, 0x09
+int 0x10
+
 gameloop:
 mov ah, 0x0f ;Set bh to the active page number
 int 0x10
 
-;Clear play area (fill it with white block characters)
-mov al, 0xdb ;Block character
-mov bl, 0x0f ;Color
-;mov byte bl, [color]
-mov cx, 16
-
-inc byte [color]
-
-mov dx, 0x0F00
-
-clear:
-mov ah, 0x09 ;Write character
+;Clear play area
+mov ax, 0x0700
+mov bh, 0x00
+mov cx, 0x0000
+mov dx, 0x0F0F
 int 0x10
-
-mov ah, 0x02 ;Update cursor position
-int 0x10
-sub dh, 1
-jns clear
 
 ;Draw snake
 ror ebx, 16
@@ -65,6 +64,7 @@ ror ebx, 16
 sub bl, 1
 jns snek
 
+;Wait
 mov byte [waitabit], 10
 moarwait:
 mov ah, 0x00
@@ -77,6 +77,43 @@ add dx, 0xFFFF
 jnz _wait
 sub byte [waitabit], 1
 jnz moarwait
+
+
+;Keyboard input
+mov bl, 0x00
+readkeys:
+mov ax, 0x0100 ;Get keyboard status
+int 0x16
+jz keyreaddone ;Jump if there aren't any keys
+mov ah, 0x00
+int 0x16
+mov bl, al
+jmp readkeys
+keyreaddone:
+
+cmp bl, 0x00
+je keydone ;Jump if no key has been read
+
+cmp bl, 0x77 ;w
+jne keyn1
+mov byte [direction], 0xF0
+
+keyn1:
+cmp bl, 0x73 ;s
+jne keyn2
+mov byte [direction], 0x10
+
+keyn2:
+cmp bl, 0x61 ;a
+jne keyn3
+mov byte [direction], 0x0F
+
+keyn3:
+cmp bl, 0x64 ;d
+jne keydone
+mov byte [direction], 0x01
+
+keydone:
 
 ;Move the snake
 xor bx, bx
@@ -111,8 +148,6 @@ cmp [snakelen], cl
 jnz _ksnek
 
 dec byte [snakelen]
-
-;Keyboard input
 
 jmp gameloop
 
