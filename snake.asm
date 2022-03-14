@@ -15,13 +15,13 @@ mov byte [snake + 1], 0x01
 mov byte [snake + 2], 0x11
 mov byte [snake + 3], 0x21
 mov byte [snake + 4], 0x31
-mov byte [snakelen], 5
+mov byte [snake + 5], 0x32
+mov byte [snakelen], 6
 
 gameloop:
 ;Clear play area (fill it with white block characters)
 mov al, 0xdb ;Block character
 mov bl, 0x0f ;Color
-mov bl, [direction]
 mov cx, 16
 
 mov dx, 0x0F00
@@ -70,7 +70,27 @@ sub dx, bx
 add dx, 0xFFFF
 jnz _wait
 
-add byte [direction], 1
+;Move the snake
+xor bx, bx
+mov byte bl, [snakelen]
+mov byte dl, [snake+bx-1]
+
+mov al, [direction]
+and al, 0x0F
+add dl, al
+and dl, 0x0F
+
+mov byte cl, [snake+bx-1]
+and cl, 0xF0
+mov al, [direction]
+and al, 0xF0
+add cl, al
+add dl, cl
+mov byte [snake+bx], dl
+
+inc byte [snakelen]
+
+;Reduce snake size again
 
 jmp gameloop
 
@@ -81,5 +101,5 @@ db 0x55, 0xaa ;Boot flag magic
 
 ;Variables
 snake equ 0x8000
-snakelen equ 0x8011
-direction equ 0x8020
+snakelen equ 0x8031
+direction equ 0x8040
