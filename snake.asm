@@ -14,7 +14,8 @@ mov byte [direction], 0x01
 mov byte [color], 0x00
 
 mov byte [snake], 0x00
-mov byte [snakelen], 1
+mov byte [snake+1], 0x01
+mov byte [snakelen], 2
 
 ;Just a quick, intial value
 mov dl, [seed]
@@ -159,6 +160,17 @@ and al, 0xF0
 add cl, al
 add dl, cl
 mov byte [snake+bx], dl
+
+;Check snake intersection
+mov byte bl, [snakelen]
+mov dl, [snake + bx]
+mov cl, [snakelen]
+sub cl, 1
+killsnek:
+mov bx, cx
+cmp byte [snake + bx], dl
+jz ded
+loop killsnek
 
 ;Check apple collision
 mov byte bl, [snakelen]
