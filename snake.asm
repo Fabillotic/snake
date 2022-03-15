@@ -1,3 +1,8 @@
+mov ah, 0x00
+int 0x1a
+mov [seed], dl
+mov byte [lrand], 0x00
+
 mov ax, 0x0001 ;Set video mode to Text, 40x25, 16 Colors
 int 0x10
 
@@ -9,12 +14,16 @@ mov byte [direction], 0x01
 mov byte [color], 0x00
 
 mov byte [snake], 0x00
-mov byte [snake + 1], 0x01
-mov byte [snake + 2], 0x11
-mov byte [snake + 3], 0x21
-mov byte [snake + 4], 0x31
-mov byte [snake + 5], 0x32
-mov byte [snakelen], 6
+mov byte [snakelen], 1
+
+;Just a quick, intial value
+mov dl, [seed]
+mov byte [apple], dl
+cmp dl, 0x00
+jne goodinitial
+mov byte [apple], 0xf8 ;Spawn the apple at a fixed place, if it's at player spawn
+
+goodinitial:
 
 ;Spam white block characters
 mov al, 0xdb
@@ -31,6 +40,8 @@ gameloop:
 mov ah, 0x0f ;Set bh to the active page number
 int 0x10
 
+ror ebx, 16 ;Stash away active page
+
 ;Clear play area
 mov ax, 0x0700
 mov bh, 0x00
@@ -39,7 +50,6 @@ mov dx, 0x0F0F
 int 0x10
 
 ;Draw snake
-ror ebx, 16
 mov bx, [snakelen]
 sub bl, 1
 
@@ -51,7 +61,7 @@ and dh, dl
 shr dh, 4
 and dl, 0x0F
 
-ror ebx, 16
+ror ebx, 16 ;Get active page
 int 0x10
 
 mov al, 0xdb ;Block character
@@ -60,9 +70,26 @@ mov cx, 1
 mov ah, 0x09
 int 0x10
 
-ror ebx, 16
+ror ebx, 16 ;Stash away active page
 sub bl, 1
 jns snek
+
+ror ebx, 16 ;Get active page
+
+;Draw apple
+mov ah, 0x02
+mov dh, 0xF0
+mov dl, [apple]
+and dh, dl
+shr dh, 4
+and dl, 0x0F
+int 0x10 ;Set cursor pos
+
+mov al, 0xdb
+mov bl, 0x0c
+mov cx, 1
+mov ah, 0x09
+int 0x10
 
 ;Wait
 mov byte [waitabit], 10
@@ -133,7 +160,13 @@ add cl, al
 add dl, cl
 mov byte [snake+bx], dl
 
-inc byte [snakelen]
+mov byte bx, [snakelen]
+mov bl, [snake + bx]
+sub bl, [apple]
+jz skiprsnake
+
+inc byte [snakelen] ;Update snakelen
+
 
 ;Reduce snake size again
 mov bx, 0x01
@@ -148,7 +181,17 @@ cmp [snakelen], cl
 jnz _ksnek
 
 dec byte [snakelen]
+jmp donemoveupdate
 
+skiprsnake: ;On apple collision
+inc byte [snakelen] ;Update snakelen
+mov byte edx, [seed]
+imul edx, 0x736e656b ;snek in hex
+add byte edx, [lrand]
+mov [lrand], dl
+mov [apple], dl
+
+donemoveupdate:
 jmp gameloop
 
 _a: jmp _a
@@ -162,3 +205,6 @@ snakelen equ 0x8031
 direction equ 0x8040
 color equ 0x8042
 waitabit equ 0x8044
+apple equ 0x8046
+seed equ 0x8048
+lrand equ 0x8050
