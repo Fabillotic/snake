@@ -160,7 +160,8 @@ add cl, al
 add dl, cl
 mov byte [snake+bx], dl
 
-mov byte bx, [snakelen]
+;Check apple collision
+mov byte bl, [snakelen]
 mov bl, [snake + bx]
 sub bl, [apple]
 jz skiprsnake
@@ -184,15 +185,33 @@ dec byte [snakelen]
 jmp donemoveupdate
 
 skiprsnake: ;On apple collision
+;RANDOM BULLSHIT GO!
 inc byte [snakelen] ;Update snakelen
-mov byte edx, [seed]
+mov ah, 0x00
+int 0x1a
+mov [seed], dl
+mov edx, 0
+mov byte dl, [seed]
 imul edx, 0x736e656b ;snek in hex
-add byte edx, [lrand]
+add byte dl, [lrand]
 mov [lrand], dl
 mov [apple], dl
 
 donemoveupdate:
+
 jmp gameloop
+
+ded: ;Death screen
+mov ah, 0x0f
+int 0x10
+mov ah, 0x02
+mov dx, 0x0010
+int 0x10
+mov bl, 0x0f
+mov cx, 1
+mov ah, 0x09
+mov al, 'F'
+int 0x10
 
 _a: jmp _a
 
