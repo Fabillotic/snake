@@ -15,12 +15,17 @@ mov byte [color], 0x00
 
 mov byte [snake], 0x00
 mov byte [snake+1], 0x01
-mov byte [snakelen], 2
+mov byte [snake+2], 0x02
+mov byte [snakelen], 3
 
 ;Just a quick, intial value
 mov dl, [seed]
 mov byte [apple], dl
 cmp dl, 0x00
+jne goodinitial
+cmp dl, 0x01
+jne goodinitial
+cmp dl, 0x02
 jne goodinitial
 mov byte [apple], 0xf8 ;Spawn the apple at a fixed place, if it's at player spawn
 
@@ -222,7 +227,7 @@ int 0x10
 mov bl, 0x0f
 mov cx, 1
 mov ah, 0x09
-mov al, 'F'
+mov al, "F"
 int 0x10
 
 _a: jmp _a
