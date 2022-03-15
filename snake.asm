@@ -10,6 +10,8 @@ mov ah, 0x01 ;Remove cursor
 mov cx, 0x0706 ;Cursor that starts after it ends lol
 int 0x10
 
+start:
+
 mov byte [direction], 0x01
 mov byte [color], 0x00
 
@@ -229,6 +231,11 @@ mov cx, 1
 mov ah, 0x09
 mov al, "F"
 int 0x10
+
+;Wait for keypress, then restart
+mov ah, 0x00
+int 0x16
+jmp start
 
 _a: jmp _a
 
