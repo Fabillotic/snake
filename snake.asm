@@ -1,3 +1,4 @@
+;Set seed to lower part of lower-order clock
 mov ah, 0x00
 int 0x1a
 mov [seed], dl
@@ -99,7 +100,7 @@ mov cx, 1
 mov ah, 0x09
 int 0x10
 
-;Wait
+;Wait to slow game loop
 mov byte [waitabit], 10
 moarwait:
 mov ah, 0x00
@@ -150,7 +151,7 @@ mov byte [direction], 0x01
 
 keydone:
 
-;Move the snake
+;Grow the snake towards direction
 xor bx, bx
 mov byte bl, [snakelen]
 mov byte dl, [snake+bx-1]
@@ -168,7 +169,7 @@ add cl, al
 add dl, cl
 mov byte [snake+bx], dl
 
-;Check snake intersection
+;Check snake-snake intersection
 mov byte bl, [snakelen]
 mov dl, [snake + bx]
 mov cl, [snakelen]
@@ -188,7 +189,7 @@ jz skiprsnake
 inc byte [snakelen] ;Update snakelen
 
 
-;Reduce snake size again
+;Shift the snake data to reduce its size again
 mov bx, 0x01
 mov cx, 0x00
 _ksnek:
@@ -244,10 +245,10 @@ db 0x55, 0xaa ;Boot flag magic
 
 ;Variables
 snake equ 0x8000
-snakelen equ 0x8031
-direction equ 0x8040
-color equ 0x8042
-waitabit equ 0x8044
-apple equ 0x8046
-seed equ 0x8048
-lrand equ 0x8050
+snakelen equ 0x8101
+direction equ 0x8116
+color equ 0x8118
+waitabit equ 0x811a
+apple equ 0x811c
+seed equ 0x811e
+lrand equ 0x8120
