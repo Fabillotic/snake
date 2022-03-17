@@ -35,12 +35,11 @@ mov byte [apple], 0xf8 ;Spawn the apple at a fixed place, if it's at player spaw
 goodinitial:
 
 ;Spam white block characters
-mov al, 0xdb
 mov bl, 0x0f
 mov cx, 0xffff
 
 mov dx, 0x1000
-mov ah, 0x02
+mov ax, 0x02db
 int 0x10
 mov ah, 0x09
 int 0x10
@@ -94,10 +93,9 @@ shr dh, 4
 and dl, 0x0F
 int 0x10 ;Set cursor pos
 
-mov al, 0xdb
+mov ax, 0x09db
 mov bl, 0x0c
 mov cx, 1
-mov ah, 0x09
 int 0x10
 
 ;Wait to slow game loop
@@ -126,9 +124,6 @@ int 0x16
 mov bl, al
 jmp readkeys
 keyreaddone:
-
-cmp bl, 0x00
-je keydone ;Jump if no key has been read
 
 cmp bl, 0x77 ;w
 jne keyn1
@@ -229,8 +224,7 @@ mov dx, 0x0010
 int 0x10
 mov bl, 0x0f
 mov cx, 1
-mov ah, 0x09
-mov al, "F"
+mov ax, 0x0946 ;Character "F", mode 09h
 int 0x10
 
 ;Wait for keypress, then restart
