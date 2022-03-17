@@ -1,5 +1,5 @@
 # snake
-Boot sector snake in 479 bytes!
+Boot sector snake in 475 bytes!
 
 ## How to build
 ### Requirements:
