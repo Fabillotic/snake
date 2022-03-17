@@ -181,9 +181,6 @@ mov bl, [snake + bx]
 sub bl, [apple]
 jz skiprsnake
 
-inc byte [snakelen] ;Update snakelen
-
-
 ;Shift the snake data to reduce its size again
 mov bx, 0x01
 mov cx, 0x00
@@ -196,7 +193,6 @@ inc bx
 cmp [snakelen], cl
 jnz _ksnek
 
-dec byte [snakelen]
 jmp donemoveupdate
 
 skiprsnake: ;On apple collision
