@@ -2,7 +2,7 @@
 mov ah, 0x00
 int 0x1a
 mov [seed], dl
-mov byte [lrand], 0x00
+mov byte [apple], 0x00
 
 mov ax, 0x0001 ;Set video mode to Text, 40x25, 16 Colors
 int 0x10
@@ -208,8 +208,7 @@ mov [seed], dl
 mov edx, 0
 mov byte dl, [seed]
 imul edx, 0x736e656b ;snek in hex
-add byte dl, [lrand]
-mov [lrand], dl
+add byte dl, [apple]
 mov [apple], dl
 
 donemoveupdate:
@@ -245,4 +244,3 @@ color equ 0x8118
 waitabit equ 0x811a
 apple equ 0x811c
 seed equ 0x811e
-lrand equ 0x8120
