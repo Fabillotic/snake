@@ -13,5 +13,8 @@ disk.img: out
 run: disk.img
 	qemu-system-x86_64 -drive file=disk.img,if=floppy,format=raw -boot order=a
 
+run_dosbox: disk.img
+	dosbox -c "BOOT disk.img -l a"
+
 clean:
 	rm -rf out disk.img
