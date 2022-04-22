@@ -9,5 +9,8 @@ mov $0x0e, %ah
 mov $'F', %al
 int $0x10
 
+end:
+jmp end
+
 .fill 510-(.-_start), 1, 0
 .word 0xaa55
