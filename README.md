@@ -4,7 +4,7 @@ Boot sector snake in 453 bytes!
 ## How to build
 ### Requirements:
 Building:
-nasm
+binutils -> as, ld
 
 Running:
 qemu
