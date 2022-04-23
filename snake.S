@@ -233,9 +233,6 @@ mov $0x00, %ah
 int $0x16
 jmp game
 
-/*Infinite loop*/
-end: jmp end
-
 /*Uninitialized variables*/
 .bss
 presnake: .skip 1
