@@ -227,8 +227,6 @@ mov ah, 0x00
 int 0x16
 jmp start
 
-_a: jmp _a
-
 times 510-($-$$) db 0 ;Fill the rest of the file with zeros
 db 0x55, 0xaa ;Boot flag magic
 
