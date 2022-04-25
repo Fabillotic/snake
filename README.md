@@ -1,10 +1,10 @@
 # snake
-Boot sector snake in 463 bytes!
+Boot sector snake in 451 bytes!
 
 ## How to build
 ### Requirements:
 Building:
-nasm
+binutils -> as, ld
 
 Running:
 qemu

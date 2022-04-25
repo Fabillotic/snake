@@ -1,14 +1,15 @@
-files = snake.asm
+files = snake.S
 
-out: $(files)
-	nasm -O0 -o out $(files)
+out.bin: $(files) clean
+	as --32 -mx86-used-note=no -o out.o $(files)
+	ld -m elf_i386 -o out.bin out.o -Ttext 0x7C00 --oformat=binary
 
-dump: out
-	objdump -D -b binary -m i8086 -M intel-mnemonic out
+dump: out.bin
+	objdump -D -b binary -m i8086 -M intel-mnemonic out.bin
 
-disk.img: out
+disk.img: out.bin
 	dd if=/dev/zero of=disk.img bs=256 count=5625
-	dd if=out of=disk.img conv=notrunc
+	dd if=out.bin of=disk.img conv=notrunc
 
 run: disk.img
 	qemu-system-x86_64 -drive file=disk.img,if=floppy,format=raw -boot order=a
@@ -17,4 +18,4 @@ run_dosbox: disk.img
 	dosbox -c "BOOT disk.img -l a"
 
 clean:
-	rm -rf out disk.img
+	rm -rf out.* disk.img
