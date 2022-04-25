@@ -240,11 +240,11 @@ snakelen: .skip 1
 direction: .skip 1
 waitabit: .skip 1
 seed: .skip 1
+apple: .skip 1
 
 .text
 
 /*Initialized variables*/
-apple: .byte 0x00
 
 /*Boot flag magic*/
 .fill 510-(.-_start), 1, 0
