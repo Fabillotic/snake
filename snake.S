@@ -155,14 +155,14 @@ keydone:
 /*Grow the snake towards direction*/
 xor %bx, %bx
 mov snakelen, %bl
-movb presnake(%bx), %dl
+movb (snake-1)(%bx), %dl
 
 mov direction, %al
 and $0x0F, %al
 add %al, %dl
 and $0x0F, %dl
 
-movb presnake(%bx), %cl
+movb (snake-1)(%bx), %cl
 and $0xF0, %cl
 mov direction, %al
 and $0xF0, %al
@@ -193,7 +193,7 @@ mov $0x00, %cx
 _ksnek:
 mov snake(%bx), %dl
 and $0xFF, %dl
-mov %dl, presnake(%bx)
+mov %dl, (snake-1)(%bx)
 inc %cl
 inc %bx
 cmp %cl, snakelen
@@ -235,7 +235,6 @@ jmp game
 
 /*Uninitialized variables*/
 .bss
-presnake: .skip 1
 snake: .skip 256
 snakelen: .skip 1
 direction: .skip 1
