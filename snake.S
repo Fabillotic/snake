@@ -54,8 +54,8 @@ int $0x10
 gameloop:
 mov $0x0f, %ah /*Set bh to the active page number*/
 int $0x10
+mov %bh, active
 
-ror $16, %ebx /*Stash away active page*/
 
 /*Clear play area*/
 mov $0x0700, %ax
@@ -76,7 +76,8 @@ and %dl, %dh
 shr $4, %dh
 and $0x0F, %dl
 
-ror $16, %ebx /*Get active page*/
+mov %bx, temp
+mov active, %bh
 int $0x10
 
 mov $0xdb, %al /*Block character*/
@@ -85,11 +86,11 @@ mov $1, %cx
 mov $0x09, %ah
 int $0x10
 
-ror $16, %ebx /*Stash away active page*/
+mov temp, %bx
 sub $1, %bl
 jns snek
 
-ror $16, %ebx /*Get active page*/
+mov active, %bh
 
 /*Draw apple*/
 mov $0x02, %ah
@@ -241,6 +242,8 @@ direction: .skip 1
 waitabit: .skip 1
 seed: .skip 1
 apple: .skip 1
+active: .skip 1
+temp: .skip 2
 
 .text
 
