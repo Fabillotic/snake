@@ -1,6 +1,8 @@
 files = snake.S
 
-out.bin: $(files) clean
+all: disk.img
+
+out.bin: $(files)
 	as --32 -mx86-used-note=no -o out.o $(files)
 	ld -m elf_i386 -o out.bin out.o -Ttext 0x7C00 --oformat=binary
 
