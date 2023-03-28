@@ -21,3 +21,5 @@ run_dosbox: disk.img
 
 clean:
 	rm -rf out.* disk.img
+
+.PHONY: all, dump, run, run_dosbox, clean
