@@ -128,26 +128,26 @@ int $0x16
 jz keyreaddone /*Jump if there aren't any keys*/
 mov $0x00, %ah
 int $0x16
-mov %al, %bl
+mov %ax, %bx
 jmp readkeys
 keyreaddone:
 
-cmp $0x77, %bl /*w*/
+cmp $0x48, %bh /*up arrow*/
 jne keyn1
 movb $0xF0, direction
 
 keyn1:
-cmp $0x73, %bl /*s*/
+cmp $0x50, %bh /*down arrow*/
 jne keyn2
 movb $0x10, direction
 
 keyn2:
-cmp $0x61, %bl /*a*/
+cmp $0x4B, %bh /*left arrow*/
 jne keyn3
 movb $0x0F, direction
 
 keyn3:
-cmp $0x64, %bl /*d*/
+cmp $0x4D, %bh /*right arrow*/
 jne keydone
 movb $0x01, direction
 
