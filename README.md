@@ -12,11 +12,11 @@ qemu / dosbox
 ### Building
 ```make``` -> Make a floppy disk image (disk.img)
 
-```make run``` -> Run using qemu
+```make run_qemu``` -> Run using qemu
 ```make run_dosbox``` -> Run using dosbox
 
 ## How to play
-Moving the snake: WASD
+Moving the snake: arrow keys
 
 Basic snake movement
 
