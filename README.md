@@ -7,12 +7,13 @@ Building:
 binutils -> as, ld
 
 Running:
-qemu
+qemu / dosbox
 
 ### Building
-```make disk.img``` -> Make a floppy disk image
+```make``` -> Make a floppy disk image (disk.img)
 
 ```make run``` -> Run using qemu
+```make run_dosbox``` -> Run using dosbox
 
 ## How to play
 Moving the snake: WASD
