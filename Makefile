@@ -7,7 +7,7 @@ out.bin: $(files)
 	ld -m elf_i386 -o out.bin out.o -Ttext 0x7C00 --oformat=binary
 
 dump: out.bin
-	objdump -D -b binary -m i8086 -M intel-mnemonic out.bin
+	objdump -D -b binary -m i8086 -M att-mnemonic out.bin
 
 disk.img: out.bin
 	dd if=/dev/zero of=disk.img bs=256 count=5625
