@@ -6,10 +6,10 @@
 .global _start
 _start:
 
-/*Set seed to lower part of lower-order clock*/
+/*Set apple to lower part of lower-order clock*/
 mov $0x00, %ah
 int $0x1a
-mov %dl, seed
+mov %dl, apple
 
 mov $0001, %ax /*Set video mode to Text, 40x25, 16 Colors*/
 int $0x10
@@ -22,14 +22,11 @@ game:
 
 movb $1, direction
 
-movb $0, (snake)
-movb $1, (snake+1)
+movw $0x0100, (snake)
 movb $2, (snake+2)
 movb $3, snakelen
 
 /*Just a quick, intial value*/
-mov seed, %dl
-movb %dl, apple
 cmp $0x00, %dl
 jne goodinitial
 cmp $0x01, %dl
@@ -207,11 +204,11 @@ skiprsnake: /*On apple collision*/
 incb snakelen /*Update snakelen*/
 mov $0x00, %ah
 int $0x1a
-mov %dl, seed
-mov $0, %edx
-mov seed, %dl
-imul $0x736e656b, %edx /*snek in hex*/
-add apple, %dl
+mov $0, %dh
+mov apple, %dl
+imul $0x656b, %dx
+xor $0xaaaa, %dx
+ror $7, %dx
 mov %dl, apple
 
 donemoveupdate:
@@ -240,7 +237,6 @@ snake: .skip 256
 snakelen: .skip 1
 direction: .skip 1
 waitabit: .skip 1
-seed: .skip 1
 apple: .skip 1
 active: .skip 1
 temp: .skip 2
