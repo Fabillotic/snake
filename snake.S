@@ -3,42 +3,47 @@
 
 .text
 
+.set snake,     0x8000 /* 255 */
+.set snakelen,  0x8100 /* 1 */
+.set direction, 0x8101 /* 1 */
+.set waitabit,  0x8102 /* 1 */
+.set apple,     0x8103 /* 1 */
+.set active,    0x8104 /* 1 */
+.set temp,      0x8105 /* 2 */
+
 .global _start
 _start:
 
-/*Set apple to lower part of lower-order clock*/
-mov $0x00, %ah
-int $0x1a
-mov %dl, apple
-
-mov $0001, %ax /*Set video mode to Text, 40x25, 16 Colors*/
+mov $0001, %ax /* Set video mode to Text, 40x25, 16 Colors */
 int $0x10
 
-mov $1, %ah /*Remove cursor*/
-mov $0x0706, %cx /*Cursor that starts after it ends lol*/
+mov $1, %ah /* Remove cursor */
+mov $0x0706, %cx /* Cursor that starts after it ends lol */
 int $0x10
 
 game:
 
 movb $1, direction
 
+/* Spawn 3-wide snake at upper-left corner facing right */
 movw $0x0100, (snake)
 movb $2, (snake+2)
 movb $3, snakelen
 
-/*Just a quick, intial value*/
-cmp $0x00, %dl
-jne goodinitial
-cmp $0x01, %dl
-jne goodinitial
-cmp $0x02, %dl
-jne goodinitial
+/* Set apple to lower part of lower-order clock */
+mov $0x00, %ah
+int $0x1a
+mov %dl, apple
 
-movb $0xf8, apple /*Spawn the apple at a fixed place, if it's at player spawn*/
+/* Spawn the apple at a fixed place, if it's at player spawn */
+cmp $0x03, apple
+jnb goodinitial
+
+movb $0xf8, apple
 
 goodinitial:
 
-/*Spam white block characters*/
+/* Spam white block characters */
 mov $0x0f, %bl
 mov $0xffff, %cx
 
@@ -49,19 +54,19 @@ mov $0x09, %ah
 int $0x10
 
 gameloop:
-mov $0x0f, %ah /*Set bh to the active page number*/
+mov $0x0f, %ah /* Set bh to the active page number */
 int $0x10
 mov %bh, active
 
 
-/*Clear play area*/
+/* Clear play area */
 mov $0x0700, %ax
 mov $0x00, %bh
 mov $0x0000, %cx
 mov $0x0F0F, %dx
 int $0x10
 
-/*Draw snake*/
+/* Draw snake */
 movb snakelen, %bl
 sub $1, %bl
 
@@ -77,7 +82,7 @@ mov %bx, temp
 mov active, %bh
 int $0x10
 
-mov $0xdb, %al /*Block character*/
+mov $0xdb, %al /* Block character */
 mov $0x0a, %bl
 mov $1, %cx
 mov $0x09, %ah
@@ -89,21 +94,21 @@ jns snek
 
 mov active, %bh
 
-/*Draw apple*/
+/* Draw apple */
 mov $0x02, %ah
 mov $0xF0, %dh
 mov apple, %dl
 and %dl, %dh
 shr $4, %dh
 and $0x0F, %dl
-int $0x10 /*Set cursor pos*/
+int $0x10 /* Set cursor pos */
 
 mov $0x09db, %ax
 mov $0x0c, %bl
 mov $1, %cx
 int $0x10
 
-/*Wait to slow game loop*/
+/* Wait to slow game loop */
 movb $10, waitabit
 moarwait:
 mov $0x00, %ah
@@ -117,40 +122,40 @@ jnz _wait
 subb $1, waitabit
 jnz moarwait
 
-/*Keyboard input*/
+/* Keyboard input */
 mov $0x00, %bl
 readkeys:
-mov $0x0100, %ax /*Get keyboard status*/
+mov $0x0100, %ax /* Get keyboard status */
 int $0x16
-jz keyreaddone /*Jump if there aren't any keys*/
+jz keyreaddone /* Jump if there aren't any keys */
 mov $0x00, %ah
 int $0x16
 mov %ax, %bx
 jmp readkeys
 keyreaddone:
 
-cmp $0x48, %bh /*up arrow*/
+cmp $0x48, %bh /* up arrow */
 jne keyn1
 movb $0xF0, direction
 
 keyn1:
-cmp $0x50, %bh /*down arrow*/
+cmp $0x50, %bh /* down arrow */
 jne keyn2
 movb $0x10, direction
 
 keyn2:
-cmp $0x4B, %bh /*left arrow*/
+cmp $0x4B, %bh /* left arrow */
 jne keyn3
 movb $0x0F, direction
 
 keyn3:
-cmp $0x4D, %bh /*right arrow*/
+cmp $0x4D, %bh /* right arrow */
 jne keydone
 movb $0x01, direction
 
 keydone:
 
-/*Grow the snake towards direction*/
+/* Grow the snake towards direction */
 xor %bx, %bx
 mov snakelen, %bl
 movb (snake-1)(%bx), %dl
@@ -168,7 +173,7 @@ add %al, %cl
 add %cl, %dl
 mov %dl, snake(%bx)
 
-/*Check snake-snake intersection*/
+/* Check snake-snake intersection */
 mov snakelen, %bl
 mov snake(%bx), %dl
 mov snakelen, %cl
@@ -179,13 +184,13 @@ cmpb %dl, snake(%bx)
 jz ded
 loop killsnek
 
-/*Check apple collision*/
+/* Check apple collision */
 mov snakelen, %bl
 mov snake(%bx), %bl
 sub apple, %bl
 jz skiprsnake
 
-/*Shift the snake data to reduce its size again*/
+/* Shift the snake data to reduce its size again */
 mov $0x01, %bx
 mov $0x00, %cx
 _ksnek:
@@ -199,23 +204,24 @@ jnz _ksnek
 
 jmp donemoveupdate
 
-skiprsnake: /*On apple collision*/
-/*RANDOM BULLSHIT GO!*/
-incb snakelen /*Update snakelen*/
+skiprsnake: /* On apple collision */
+/* RANDOM BULLSHIT GO! */
+incb snakelen /* Update snakelen */
 mov $0x00, %ah
 int $0x1a
-mov $0, %dh
+mov $0x29, %dh
 mov apple, %dl
 imul $0x656b, %dx
-xor $0xaaaa, %dx
 ror $7, %dx
+xor $0xaaaa, %dx
+ror $4, %dx
 mov %dl, apple
 
 donemoveupdate:
 
 jmp gameloop
 
-ded: /*Death screen*/
+ded: /* Death screen */
 mov $0x0f, %ah
 int $0x10
 mov $0x02, %ah
@@ -223,28 +229,14 @@ mov $0x0010, %dx
 int $0x10
 mov $0x0f, %bl
 mov $0x01, %cx
-mov $0x0946, %ax /*Character "F", mode 09h*/
+mov $0x0946, %ax /* Character "F", mode 09h */
 int $0x10
 
-/*Wait for keypress, then restart*/
+/* Wait for keypress, then restart */
 mov $0x00, %ah
 int $0x16
 jmp game
 
-/*Uninitialized variables*/
-.bss
-snake: .skip 256
-snakelen: .skip 1
-direction: .skip 1
-waitabit: .skip 1
-apple: .skip 1
-active: .skip 1
-temp: .skip 2
-
-.text
-
-/*Initialized variables*/
-
-/*Boot flag magic*/
+/* Boot flag magic */
 .fill 510-(.-_start), 1, 0
 .word 0xaa55
