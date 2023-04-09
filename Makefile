@@ -1,25 +1,30 @@
-files = snake.S
+SRC = snake.S
+OBJ = out.o
+BIN = out.bin
+DISK = disk.img
 
-all: disk.img
+all: $(DISK)
 
-out.bin: $(files)
-	as --32 -mx86-used-note=no -o out.o $(files)
-	ld -m elf_i386 -o out.bin out.o -Ttext 0x7C00 --oformat=binary
+$(OBJ): $(SRC)
+	as --32 -mx86-used-note=no -o $(OBJ) $(SRC)
 
-dump: out.bin
-	objdump -D -b binary -m i8086 -M att-mnemonic out.bin
+$(BIN): $(OBJ)
+	ld -m elf_i386 -o $(BIN) $(OBJ) -Ttext 0x7C00 --oformat=binary
 
-disk.img: out.bin
-	dd if=/dev/zero of=disk.img bs=256 count=5625
-	dd if=out.bin of=disk.img conv=notrunc
+dump: $(BIN)
+	objdump -D -b binary -m i8086 -M att-mnemonic $(BIN)
 
-run_qemu: disk.img
-	qemu-system-x86_64 -drive file=disk.img,if=floppy,format=raw -boot order=a
+$(DISK): $(BIN)
+	dd if=/dev/zero of=$(DISK) bs=256 count=5625
+	dd if=$(BIN) of=$(DISK) conv=notrunc bs=1
 
-run_dosbox: disk.img
-	dosbox -c "BOOT disk.img -l a"
+run_qemu: $(DISK)
+	qemu-system-x86_64 -drive file=$(DISK),if=floppy,format=raw -boot order=a
+
+run_dosbox: $(DISK)
+	dosbox -c "BOOT $(DISK) -l a"
 
 clean:
-	rm -rf out.* disk.img
+	rm -rf $(OBJ) $(BIN) $(DISK)
 
 .PHONY: all, dump, run, run_dosbox, clean
