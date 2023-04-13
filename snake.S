@@ -36,7 +36,7 @@ int $0x1a
 mov %dl, apple
 
 /* Spawn the apple at a fixed place, if it's at player spawn */
-cmp $0x03, apple
+cmpb $0x03, apple
 jnb goodinitial
 
 movb $0xf8, apple
