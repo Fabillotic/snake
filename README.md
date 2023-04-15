@@ -14,8 +14,14 @@ qemu / dosbox
 ### Building
 ```make``` -> Make a floppy disk image (disk.img)
 
+### Running
+```make run``` -> Run using default runner (dosbox)
+
 ```make run_qemu``` -> Run using qemu
+
 ```make run_dosbox``` -> Run using dosbox
+
+(The default runner can be changed with ```DEFAULT_RUN``` of the Makefile)
 
 ## How to play
 Moving the snake: arrow keys
