@@ -6,7 +6,7 @@ Boot sector snake in 430 bytes!
 ## How to build
 ### Requirements:
 Building:
-binutils -> as, ld
+binutils (as, ld)
 
 Running:
 qemu / dosbox
