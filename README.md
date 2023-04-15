@@ -1,6 +1,8 @@
 # snake
 Boot sector snake in 430 bytes!
 
+![screenshot](screenshot.png)
+
 ## How to build
 ### Requirements:
 Building:
