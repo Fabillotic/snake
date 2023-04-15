@@ -2,6 +2,7 @@ SRC = snake.S
 OBJ = out.o
 BIN = out.bin
 DISK = disk.img
+DEFAULT_RUN = dosbox
 
 all: $(DISK)
 
@@ -18,6 +19,8 @@ $(DISK): $(BIN)
 	dd if=/dev/zero of=$(DISK) bs=256 count=5625
 	dd if=$(BIN) of=$(DISK) conv=notrunc bs=1
 
+run: run_$(DEFAULT_RUN)
+
 run_qemu: $(DISK)
 	qemu-system-x86_64 -drive file=$(DISK),if=floppy,format=raw -boot order=a
 
@@ -27,4 +30,4 @@ run_dosbox: $(DISK)
 clean:
 	rm -rf $(OBJ) $(BIN) $(DISK)
 
-.PHONY: all, dump, run, run_dosbox, clean
+.PHONY: all, dump, run, run_qemu, run_dosbox, clean
