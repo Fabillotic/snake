@@ -16,7 +16,7 @@ dump: $(BIN)
 	objdump -D -b binary -m i8086 -M att-mnemonic $(BIN)
 
 $(DISK): $(BIN)
-	dd if=/dev/zero of=$(DISK) bs=256 count=5625
+	dd if=/dev/zero of=$(DISK) bs=512 count=2880
 	dd if=$(BIN) of=$(DISK) conv=notrunc bs=1
 
 run: run_$(DEFAULT_RUN)
