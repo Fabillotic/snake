@@ -205,17 +205,29 @@ jnz _ksnek
 jmp donemoveupdate
 
 skiprsnake: /* On apple collision */
-/* RANDOM BULLSHIT GO! */
 incb snakelen /* Update snakelen */
-mov $0x00, %ah
-int $0x1a
-mov $0x29, %dh
-mov apple, %dl
-imul $0x656b, %dx
-ror $7, %dx
-xor $0xaaaa, %dx
-ror $4, %dx
-mov %dl, apple
+
+/* RANDOM BULLSHIT GO! */
+/* Modified XORshift 16-bit for 8 bits instead */
+mov apple, %bl
+mov apple, %bh
+
+mov %bx, %dx
+shr $7, %dx
+xor %bx, %dx
+mov %dx, %bx
+
+shl $9, %dx
+xor %bx, %dx
+mov %dx, %bx
+
+shr $13, %dx
+xor %bx, %dx
+mov %dx, %bx
+
+xor %bl, %bh
+
+mov %bl, apple
 
 donemoveupdate:
 

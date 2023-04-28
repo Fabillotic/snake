@@ -1,5 +1,5 @@
 # snake
-Boot sector snake in 430 bytes!
+Boot sector snake in 439 bytes!
 
 ![screenshot](screenshot.png)
 
